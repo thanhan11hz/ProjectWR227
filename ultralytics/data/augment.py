@@ -2450,6 +2450,7 @@ def v8_transforms(dataset, imgsz: int, hyp: IterableSimpleNamespace, stretch: bo
             pre_transform,
             MixUp(dataset, pre_transform=pre_transform, p=hyp.mixup),
             CutMix(dataset, pre_transform=pre_transform, p=hyp.cutmix),
+            ImageNetCCorruption(p=0.3), # Thêm data augmentation ở đây
             Albumentations(p=1.0, transforms=getattr(hyp, "augmentations", None)),
             RandomHSV(hgain=hyp.hsv_h, sgain=hyp.hsv_s, vgain=hyp.hsv_v),
             RandomFlip(direction="vertical", p=hyp.flipud, flip_idx=flip_idx),
@@ -2814,3 +2815,95 @@ class ToTensor:
         im = im.half() if self.half else im.float()  # uint8 to fp16/32
         im /= 255.0  # 0-255 to 0.0-1.0
         return im
+
+import numpy as np
+import cv2
+import random
+
+def gaussian_noise(img, severity=1):
+
+    c = [0.08, 0.12, 0.18, 0.26, 0.38][severity-1]
+
+    img = img.astype(np.float32) / 255.0
+
+    noise = np.random.normal(scale=c, size=img.shape)
+
+    img = np.clip(img + noise, 0, 1)
+
+    return (img * 255).astype(np.uint8)
+
+def motion_blur(img, severity=1):
+
+    c = [3,5,7,9,11][severity-1]
+
+    kernel = np.zeros((c, c))
+    kernel[int((c-1)/2), :] = np.ones(c)
+
+    angle = random.uniform(-45,45)
+
+    M = cv2.getRotationMatrix2D((c//2,c//2), angle, 1)
+    kernel = cv2.warpAffine(kernel, M, (c,c))
+
+    kernel_sum = np.sum(kernel)
+    if kernel_sum != 0:
+        kernel = kernel / kernel_sum
+
+    return cv2.filter2D(img, -1, kernel)
+
+def contrast(img, severity=1):
+
+    c = [0.4, 0.3, 0.2, 0.1, 0.05][severity-1]
+
+    img = img.astype(np.float32) / 255.0
+
+    means = np.mean(img, axis=(0,1), keepdims=True)
+
+    img = np.clip((img - means) * c + means, 0, 1)
+
+    return (img * 255).astype(np.uint8)
+
+def brightness(img, severity=1):
+
+    c = [0.1,0.2,0.3,0.4,0.5][severity-1]
+
+    img = img.astype(np.float32) / 255.0
+
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+    hsv[:,:,2] = np.clip(hsv[:,:,2] + c, 0, 1)
+
+    img = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+    return (img * 255).astype(np.uint8)
+
+class ImageNetCCorruption:
+
+    def __init__(self, p=0.3):
+
+        self.p = p
+
+        self.corruptions = [
+            gaussian_noise,
+            motion_blur,
+            brightness,
+            contrast
+        ]
+
+    def __call__(self, labels):
+
+        if "img" not in labels:
+            return labels
+
+        img = labels["img"].astype(np.uint8)
+
+        if random.random() < self.p:
+
+            corruption = random.choice(self.corruptions)
+
+            severity = random.randint(1,3)
+
+            img = corruption(img, severity)
+
+        labels["img"] = img
+
+        return labels
