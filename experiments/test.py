@@ -7,8 +7,8 @@ sys.path.append(str(ROOT))
 import json
 from ultralytics import YOLO
 
-WEIGHTS = ROOT + "outputs/exp_baseline/weights/best.pt"
-DATASET = ROOT + "configs/dataset.yaml"
+WEIGHTS = ROOT / "outputs/baseline/weights/best.pt"
+DATASET = ROOT / "configs/dataset.yaml"
 
 
 def evaluate():
@@ -29,7 +29,7 @@ def evaluate():
         "recall": metrics.box.mr
     }
 
-    with open(ROOT+"outputs/metrics/results.json", "w") as f:
+    with open(ROOT / "outputs/metrics/results.json", "w") as f:
         json.dump(results, f, indent=4)
 
     print(results)

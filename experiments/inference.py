@@ -10,7 +10,7 @@ from ultralytics import YOLO
 import numpy as np
 
 IMAGE_PATH = "test.jpg"
-WEIGHTS = ROOT + "outputs/baseline/weights/best.pt"
+WEIGHTS = ROOT / "outputs/baseline/weights/best.pt"
 
 
 def generate_attention_map(model, img_tensor, target_layer):
@@ -59,7 +59,7 @@ def inference():
     results = model.predict(
         IMAGE_PATH,
         save=True,
-        project=ROOT + "outputs/predictions"
+        project=ROOT / "outputs/predictions"
     )
 
     img = cv2.imread(IMAGE_PATH)
@@ -74,7 +74,7 @@ def inference():
 
     overlay = cv2.addWeighted(img,0.5,heatmap,0.5,0)
 
-    cv2.imwrite("outputs/attention_maps/cam.jpg", overlay)
+    cv2.imwrite(ROOT / "outputs/attention_maps/cam.jpg", overlay)
 
     print("Inference done")
 

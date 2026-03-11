@@ -42,16 +42,16 @@ hyp = IterableSimpleNamespace(
     scale = 0.1,
 )
 
-DATA_ROOT = ROOT + "/data/"
+DATA_ROOT = ROOT / "data/"
 MODEL_WEIGHTS = "yolov8s.pt"   # pretrained weights
-MODEL_CFG = ROOT + "/ultralytics/cfg/models/v8/yolov8.yaml"
+MODEL_CFG = ROOT / "ultralytics/cfg/models/v8/yolov8.yaml"
 
 EPOCHS = 100
 BATCH = 16
 IMG_SIZE = 640
 
 EXP_NAME = "baseline"
-SAVE_DIR = ROOT + "/outputs"
+SAVE_DIR = ROOT / "outputs"
 
 def train():
 
