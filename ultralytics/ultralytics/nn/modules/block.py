@@ -2069,27 +2069,26 @@ class RealNVP(nn.Module):
 
 # Chỉnh sửa
 class SEModule(nn.Module):
-    """Squeeze-and-Excitation Module (Hu et al., 2019).
-    
-    Thực hiện channel-wise attention theo 2 giai đoạn:
-      - Squeeze: Global Average Pooling → vector z có shape (C,)
-      - Excitation: FC → ReLU → FC → Sigmoid → scale lại feature map
-    """
+    """Squeeze-and-Excitation Module."""
+
     def __init__(self, channels, reduction=16):
         super().__init__()
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)          # Squeeze
-        self.fc = nn.Sequential(                          # Excitation
-            nn.Linear(channels, channels // reduction, bias=False),
-            nn.ReLU(),
-            nn.Linear(channels // reduction, channels, bias=False),
+
+        hidden = max(1, channels // reduction)
+
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+
+        self.fc = nn.Sequential(
+            nn.Linear(channels, hidden, bias=False),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden, channels, bias=False),
             nn.Sigmoid()
         )
 
     def forward(self, x):
         b, c, _, _ = x.shape
-        # Squeeze: (B, C, H, W) → (B, C)
+
         z = self.avg_pool(x).view(b, c)
-        # Excitation: (B, C) → (B, C) → reshape → (B, C, 1, 1)
         s = self.fc(z).view(b, c, 1, 1)
-        # Scale: broadcast multiply
+
         return x * s

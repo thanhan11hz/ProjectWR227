@@ -1,17 +1,19 @@
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]   # project_root
-sys.path.append(str(ROOT))
+ROOT = Path(__file__).resolve().parents[1]
+
+sys.path.insert(0, str(ROOT / "ultralytics"))
+sys.path.insert(0, str(ROOT))
 
 from ultralytics import YOLO
-from ultralytics.utils import IterableSimpleNamespace
 import yaml
 from pathlib import Path
 
 def create_dataset_yaml(root_dir, save_path="configs/dataset.yaml"):
+
     data = {
-        "path": root_dir,
+        "path": str(root_dir),   # ✅ convert sang string
         "train": "images/train",
         "val": "images/val",
         "test": "images/test",
@@ -21,33 +23,16 @@ def create_dataset_yaml(root_dir, save_path="configs/dataset.yaml"):
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
 
     with open(save_path, "w") as f:
-        yaml.dump(data, f)
+        yaml.safe_dump(data, f)   # dùng safe_dump luôn
 
     return save_path
 
-hyp = IterableSimpleNamespace(
-    mosaic=0.0,
-    mixup=0.0,
-    cutmix=0.0,
-    copy_paste = 0,
-
-    hsv_h=0.015,
-    hsv_s=0.7,
-    hsv_v=0.4,
-
-    flipud=0.0,
-    fliplr=0.5,
-    degrees = 5,
-    translate = 0.05,
-    scale = 0.1,
-)
-
-DATA_ROOT = ROOT / "data"
+DATA_ROOT = ROOT / "data/"
 MODEL_WEIGHTS = "yolov8s.pt"   # pretrained weights
-MODEL_CFG = ROOT / "ultralytics/cfg/models/v8/yolov8.yaml"
+MODEL_CFG = ROOT / "ultralytics/ultralytics/cfg/models/v8/yolov8s.yaml"
 
-EPOCHS = 100
-BATCH = 16
+EPOCHS = 35
+BATCH = 32
 IMG_SIZE = 640
 
 EXP_NAME = "baseline+augmentation+se"
@@ -71,7 +56,21 @@ def train():
         pretrained=True,
         save=True,
         exist_ok=True,
-        hyp=hyp,
+        workers=8,
+        mosaic=0.0,
+        mixup=0.0,
+        cutmix=0.0,
+        copy_paste = 0,
+
+        hsv_h=0.015,
+        hsv_s=0.7,
+        hsv_v=0.4,
+
+        flipud=0.0,
+        fliplr=0.5,
+        degrees = 5,
+        translate = 0.05,
+        scale = 0.1,
     )
 
     print("Training completed")
