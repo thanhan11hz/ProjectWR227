@@ -1,0 +1,42 @@
+# Set up repo
+- Cài git:
+apt update
+apt install -y git
+
+- Clone repo
+git clone https://github.com/thanhan11hz/ProjectWR227.git
+git checkout [branch_name]
+
+- Cài Miniconda
+
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh
+Enter
+yes
+Enter
+yes
+source ~/.bashrc
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main
+conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r
+conda create -n yolo python=3.10 -y
+conda activate yolo
+
+- Cài package
+
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+pip install opencv-python matplotlib pandas seaborn tqdm
+pip install albumentations
+
+- Cài ultralytics local như một package
+cd ultralytics
+pip install -e .
+
+- Tạo thư mục data trong repo gồm 2 thư mục con images và labels
+- Tải dữ liệu vào
+
+- Kiểm tra xem có thư mục assets trong ultralytics/ultralytics
+- Nếu không tải từ repo gốc và load vào
+
+- Bắt đầu chạy code
+cd experiments
+python train.py

@@ -11,7 +11,7 @@ sys.path.insert(0, str(ROOT))
 
 WEIGHTS = ROOT / "outputs/baseline/weights/best.pt"
 
-DATA_ROOT = ROOT / "dataset"
+DATA_ROOT = ROOT / "data/"
 IMAGES_TEST = DATA_ROOT / "images/test"
 LABELS_TEST = DATA_ROOT / "labels/test"
 
@@ -47,7 +47,7 @@ def evaluate():
 
         print(f"\nEvaluating corruption: {folder.name}")
 
-        yaml_path = ROOT / "configs/temp_test.yaml"
+        yaml_path = ROOT / "experiments/configs/temp_test.yaml"
 
         create_dataset_yaml(folder, yaml_path)
 
