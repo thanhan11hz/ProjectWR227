@@ -35,7 +35,7 @@ EPOCHS = 35
 BATCH = 32
 IMG_SIZE = 640
 
-EXP_NAME = "baseline+seP3"
+EXP_NAME = "baseline+seP5"
 SAVE_DIR = ROOT / "outputs"
 
 def train():

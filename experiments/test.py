@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "ultralytics"))
 sys.path.insert(0, str(ROOT))
 
-WEIGHTS = ROOT / "outputs/baseline+seP3/weights/best.pt"
+WEIGHTS = ROOT / "outputs/baseline+seP5/weights/best.pt"
 
 DATA_ROOT = ROOT / "dataset"
 IMAGES_TEST = DATA_ROOT / "images/test"
