@@ -28,14 +28,14 @@ def create_dataset_yaml(root_dir, save_path="configs/dataset.yaml"):
     return save_path
 
 DATA_ROOT = ROOT / "data/"
-MODEL_WEIGHTS = "yolov8s.pt"   # pretrained weights
-MODEL_CFG = ROOT / "ultralytics/ultralytics/cfg/models/v8/yolov8s.yaml"
+MODEL_WEIGHTS = "yolov5s.pt"   # pretrained weights
+MODEL_CFG = ROOT / "ultralytics/ultralytics/cfg/models/v5/yolov5s.yaml"
 
 EPOCHS = 35
 BATCH = 32
 IMG_SIZE = 640
 
-EXP_NAME = "baseline+se"
+EXP_NAME = "v5_baseline+se"
 SAVE_DIR = ROOT / "outputs"
 
 def train():
